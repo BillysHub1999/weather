@@ -162,6 +162,8 @@ app.get('/', requireAuth, async (req, res) => {
       <head>
         <title>Lake Oswego Dashboard</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
         <style>
           * { box-sizing: border-box; margin: 0; padding: 0; }
           body {
@@ -283,6 +285,11 @@ app.get('/', requireAuth, async (req, res) => {
           <h1>📍 Lake Oswego & Portland</h1>
           <a href="/logout" class="logout">Sign Out</a>
         </div>
+        <div class="card" style="max-width:900px;margin:0 auto 20px;background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:24px;">
+          <h2 style="font-size:0.8rem;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,0.4);margin-bottom:16px;">🛰️ Live Radar — Pacific Northwest</h2>
+          <div id="map" style="height:360px;border-radius:10px;overflow:hidden;"></div>
+        </div>
+
         <div class="grid">
           <div class="card">
             <h2>🌤️ Current Weather — Lake Oswego, OR</h2>
@@ -310,6 +317,36 @@ app.get('/', requireAuth, async (req, res) => {
           </div>
         </div>
         <div class="updated">Last updated: ${new Date().toLocaleString('en-US', {timeZone:'America/Los_Angeles'})}</div>
+
+        <script>
+          // Initialize map centered on Lake Oswego
+          const map = L.map('map').setView([45.4207, -122.7009], 8);
+
+          // Base tile layer (dark theme)
+          L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap &copy; CARTO',
+            subdomains: 'abcd',
+            maxZoom: 19
+          }).addTo(map);
+
+          // RainViewer radar overlay
+          fetch('https://api.rainviewer.com/public/weather-maps.json')
+            .then(r => r.json())
+            .then(data => {
+              const frames = data.radar.past;
+              const latest = frames[frames.length - 1];
+              L.tileLayer('https://tilecache.rainviewer.com' + latest.path + '/256/{z}/{x}/{y}/2/1_1.png', {
+                opacity: 0.6,
+                attribution: 'RainViewer'
+              }).addTo(map);
+            });
+
+          // Marker for Lake Oswego
+          L.marker([45.4207, -122.7009])
+            .addTo(map)
+            .bindPopup('<b>Lake Oswego, OR</b>')
+            .openPopup();
+        </script>
       </body>
       </html>
     `);
