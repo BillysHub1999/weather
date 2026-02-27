@@ -116,17 +116,16 @@ app.get('/', requireAuth, async (req, res) => {
   try {
     // Fetch weather from Open-Meteo (Lake Oswego, OR coords)
     const weatherRes = await fetch(
-      'https://api.open-meteo.com/v1/forecast?latitude=45.4207&longitude=-122.7009&current_weather=true&hourly=temperature_2m,relativehumidity_2m,apparent_temperature,windspeed_10m&temperature_unit=fahrenheit&windspeed_unit=mph&timezone=America%2FLos_Angeles'
+      'https://api.open-meteo.com/v1/forecast?latitude=45.4207&longitude=-122.7009&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FLos_Angeles'
     );
     const weatherData = await weatherRes.json();
-    const cw = weatherData.current_weather || {};
-    const hourly = weatherData.hourly || {};
+    const cw = weatherData.current || {};
     const current = {
-      temperature_2m: cw.temperature,
-      weathercode: cw.weathercode,
-      windspeed_10m: cw.windspeed,
-      relativehumidity_2m: (hourly.relativehumidity_2m || [50])[0],
-      apparent_temperature: (hourly.apparent_temperature || [cw.temperature])[0]
+      temperature_2m: cw.temperature_2m,
+      weathercode: cw.weather_code,
+      windspeed_10m: cw.wind_speed_10m,
+      relativehumidity_2m: cw.relative_humidity_2m,
+      apparent_temperature: cw.apparent_temperature
     };
 
     const weatherCodes = {
