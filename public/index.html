@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Morning Briefing — Lake Oswego</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0d1117;
+      --bg2:#161b22;
+      --bg3:#1c2230;
+      --border:rgba(255,255,255,0.08);
+      --white:#e6edf3;
+      --muted:#8b949e;
+      --green:#3fb950;
+      --red:#f85149;
+      --blue:#58a6ff;
+      --gold:#d4a843;
+      --purple:#bc8cff;
+    }
+    html,body{min-height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:var(--white);font-size:14px}
+
+    /* HEADER */
+    header{
+      background:linear-gradient(135deg,#0d1117,#161b22);
+      border-bottom:1px solid var(--border);
+      padding:0 28px;
+      display:flex;align-items:center;justify-content:space-between;
+      height:60px;position:sticky;top:0;z-index:1000;
+    }
+    .logo{display:flex;align-items:center;gap:12px}
+    .logo h1{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--white)}
+    .logo span{font-size:0.7rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+    .header-time{font-size:0.8rem;color:var(--muted);text-align:right}
+    .header-time strong{color:var(--white);display:block;font-size:1rem}
+
+    /* LAYOUT */
+    main{max-width:1440px;margin:0 auto;padding:20px 20px 60px;display:grid;gap:16px}
+
+    /* TOP ROW: weather + radar */
+    .top-row{display:grid;grid-template-columns:280px 1fr;gap:16px}
+    @media(max-width:900px){.top-row{grid-template-columns:1fr}}
+
+    /* CARDS */
+    .card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+    .card-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .card-header h2{font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted)}
+    .card-header span{font-size:0.7rem;color:var(--muted)}
+    .card-body{padding:16px}
+
+    /* WEATHER */
+    .weather-temp{font-size:3.5rem;font-weight:700;line-height:1;color:var(--white)}
+    .weather-cond{font-size:1rem;color:var(--muted);margin:4px 0 16px}
+    .weather-location{font-size:0.75rem;color:var(--blue);margin-bottom:16px}
+    .weather-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .weather-stat{background:var(--bg3);border-radius:8px;padding:10px 12px}
+    .weather-stat .lbl{font-size:0.68rem;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.5px}
+    .weather-stat .val{font-size:1rem;font-weight:600;color:var(--white)}
+
+    /* MAP */
+    #map{height:320px}
+
+    /* STOCKS */
+    .stocks-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px}
+    @media(max-width:700px){.stocks-grid{grid-template-columns:repeat(2,1fr)}}
+    .stock-card{background:var(--bg3);border-radius:10px;padding:12px 14px;border:1px solid var(--border);transition:border-color 0.2s}
+    .stock-card:hover{border-color:rgba(255,255,255,0.2)}
+    .stock-name{font-size:0.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px}
+    .stock-price{font-size:1.3rem;font-weight:700;color:var(--white);margin-bottom:4px}
+    .stock-change{font-size:0.78rem;font-weight:600;display:flex;align-items:center;gap:4px}
+    .stock-change.up{color:var(--green)}
+    .stock-change.down{color:var(--red)}
+    .stock-type{font-size:0.65rem;color:var(--muted);margin-top:4px}
+    .stock-loading{color:var(--muted);font-size:0.8rem;padding:20px;text-align:center}
+
+    /* BOTTOM ROW */
+    .bottom-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    @media(max-width:900px){.bottom-row{grid-template-columns:1fr}}
+
+    /* NEWS */
+    .news-list{padding:4px 0}
+    .news-item{display:block;padding:12px 16px;border-bottom:1px solid var(--border);text-decoration:none;color:inherit;transition:background 0.15s}
+    .news-item:last-child{border-bottom:none}
+    .news-item:hover{background:var(--bg3)}
+    .news-meta{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+    .news-source{font-size:0.65rem;font-weight:600;padding:2px 7px;border-radius:10px;background:rgba(88,166,255,0.1);color:var(--blue)}
+    .news-cat{font-size:0.65rem;color:var(--muted)}
+    .news-date{font-size:0.65rem;color:var(--muted);margin-left:auto}
+    .news-title{font-size:0.88rem;font-weight:500;color:var(--white);line-height:1.4;margin-bottom:4px}
+    .news-summary{font-size:0.75rem;color:var(--muted);line-height:1.4}
+    .news-arrow{color:var(--blue);font-size:0.7rem;margin-top:4px;display:block}
+
+    /* CATEGORY TABS */
+    .news-tabs{display:flex;gap:6px;padding:10px 16px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+    .news-tab{font-size:0.72rem;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;transition:all 0.15s}
+    .news-tab.active{background:var(--blue);color:#000;border-color:var(--blue);font-weight:600}
+
+    /* FOOTER */
+    .refresh-bar{text-align:center;padding:12px;font-size:0.72rem;color:var(--muted)}
+    .refresh-bar a{color:var(--blue);text-decoration:none;margin-left:8px}
+    footer{text-align:center;padding:20px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border)}
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div>
+      <h1>📍 Morning Briefing</h1>
+      <span>Lake Oswego, Oregon</span>
+    </div>
+  </div>
+  <div class="header-time">
+    <strong id="clock">--:--</strong>
+    <span id="date-str">Loading...</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- TOP ROW: WEATHER + RADAR -->
+  <div class="top-row">
+
+    <!-- WEATHER -->
+    <div class="card">
+      <div class="card-header">
+        <h2>🌤️ Current Weather</h2>
+        <span>Lake Oswego, OR</span>
+      </div>
+      <div class="card-body" id="weather-body">
+        <div style="color:var(--muted);font-size:0.8rem">Loading...</div>
+      </div>
+    </div>
+
+    <!-- RADAR -->
+    <div class="card">
+      <div class="card-header">
+        <h2>🛰️ Live Radar</h2>
+        <span>Pacific Northwest</span>
+      </div>
+      <div id="map"></div>
+    </div>
+
+  </div>
+
+  <!-- STOCKS -->
+  <div class="card">
+    <div class="card-header">
+      <h2>📈 Markets & Futures</h2>
+      <span id="market-status">Loading...</span>
+    </div>
+    <div id="stocks-container">
+      <div class="stock-loading">Loading market data...</div>
+    </div>
+  </div>
+
+  <!-- BOTTOM ROW: US NEWS + INTERNATIONAL NEWS -->
+  <div class="bottom-row">
+
+    <div class="card">
+      <div class="card-header">
+        <h2>🇺🇸 US News</h2>
+        <span id="us-count"></span>
+      </div>
+      <div id="us-news" class="news-list">
+        <div style="padding:16px;color:var(--muted);font-size:0.8rem">Loading...</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>🌍 International News</h2>
+        <span id="intl-count"></span>
+      </div>
+      <div id="intl-news" class="news-list">
+        <div style="padding:16px;color:var(--muted);font-size:0.8rem">Loading...</div>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<div class="refresh-bar">
+  Last updated: <span id="last-updated">--</span>
+  <a href="javascript:location.reload()">↻ Refresh</a>
+</div>
+
+<footer>Morning Briefing · Lake Oswego, OR · Powered by OpenClaw</footer>
+
+<script>
+// ── CLOCK ──
+function updateClock() {
+  const now = new Date();
+  const time = now.toLocaleTimeString('en-US', { timeZone: 'America/Los_Angeles', hour: '2-digit', minute: '2-digit' });
+  const date = now.toLocaleDateString('en-US', { timeZone: 'America/Los_Angeles', weekday: 'long', month: 'long', day: 'numeric' });
+  document.getElementById('clock').textContent = time;
+  document.getElementById('date-str').textContent = date;
+  document.getElementById('last-updated').textContent = time;
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+// ── RADAR MAP ──
+const map = L.map('map').setView([45.4207, -122.7009], 8);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OpenStreetMap &copy; CARTO', subdomains: 'abcd', maxZoom: 19
+}).addTo(map);
+
+// RainViewer radar
+fetch('https://api.rainviewer.com/public/weather-maps.json')
+  .then(r => r.json())
+  .then(data => {
+    const frames = data.radar?.past || [];
+    if (frames.length) {
+      const latest = frames[frames.length - 1];
+      L.tileLayer(`https://tilecache.rainviewer.com${latest.path}/256/{z}/{x}/{y}/2/1_1.png`, {
+        opacity: 0.6, zIndex: 2
+      }).addTo(map);
+    }
+  }).catch(() => {});
+
+L.marker([45.4207, -122.7009]).addTo(map).bindPopup('Lake Oswego, OR');
+
+// ── WEATHER ──
+async function loadWeather() {
+  try {
+    const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=45.4207&longitude=-122.7009&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FLos_Angeles');
+    const d = await r.json();
+    const c = d.current || {};
+
+    const codes = {
+      0:'☀️ Clear',1:'🌤️ Mainly Clear',2:'⛅ Partly Cloudy',3:'☁️ Overcast',
+      45:'🌫️ Foggy',48:'🌫️ Icy Fog',51:'🌦️ Light Drizzle',53:'🌦️ Drizzle',
+      55:'🌧️ Heavy Drizzle',61:'🌧️ Light Rain',63:'🌧️ Rain',65:'🌧️ Heavy Rain',
+      71:'🌨️ Light Snow',73:'❄️ Snow',75:'❄️ Heavy Snow',80:'🌦️ Showers',
+      81:'🌧️ Heavy Showers',95:'⛈️ Thunderstorm'
+    };
+
+    document.getElementById('weather-body').innerHTML = `
+      <div class="weather-temp">${Math.round(c.temperature_2m)}°F</div>
+      <div class="weather-cond">${codes[c.weather_code] || '🌡️ Unknown'}</div>
+      <div class="weather-location">📍 Lake Oswego, Oregon</div>
+      <div class="weather-grid">
+        <div class="weather-stat"><div class="lbl">Feels Like</div><div class="val">${Math.round(c.apparent_temperature)}°F</div></div>
+        <div class="weather-stat"><div class="lbl">Humidity</div><div class="val">${c.relative_humidity_2m}%</div></div>
+        <div class="weather-stat"><div class="lbl">Wind</div><div class="val">${Math.round(c.wind_speed_10m)} mph</div></div>
+      </div>
+    `;
+  } catch(e) {
+    document.getElementById('weather-body').innerHTML = '<div style="color:var(--muted)">Weather unavailable</div>';
+  }
+}
+
+// ── STOCKS ──
+async function loadStocks() {
+  try {
+    const r = await fetch('/api/stocks');
+    const stocks = await r.json();
+
+    const typeColors = { index: '#58a6ff', commodity: '#d4a843', currency: '#bc8cff' };
+
+    const html = `<div class="stocks-grid">${stocks.map(s => {
+      if (s.error) return `<div class="stock-card"><div class="stock-name">${s.name}</div><div class="stock-price" style="color:var(--muted)">N/A</div></div>`;
+      const up = parseFloat(s.change) >= 0;
+      const arrow = up ? '▲' : '▼';
+      const cls = up ? 'up' : 'down';
+      const unit = s.name === 'Silver' ? 'oz' : s.name === 'Gold' ? 'oz' : s.name === 'Crude Oil' ? 'bbl' : '';
+      return `
+        <div class="stock-card">
+          <div class="stock-name" style="color:${typeColors[s.type]}">${s.name}</div>
+          <div class="stock-price">$${parseFloat(s.price).toLocaleString()}</div>
+          <div class="stock-change ${cls}">${arrow} ${Math.abs(s.change)} (${Math.abs(s.changePct)}%)</div>
+          <div class="stock-type">${s.type.toUpperCase()}${unit ? ' · per ' + unit : ''} · ${s.marketState || 'CLOSED'}</div>
+        </div>`;
+    }).join('')}</div>`;
+
+    document.getElementById('stocks-container').innerHTML = html;
+    document.getElementById('market-status').textContent = new Date().toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour: '2-digit', minute: '2-digit' }) + ' ET';
+  } catch(e) {
+    document.getElementById('stocks-container').innerHTML = '<div class="stock-loading">Market data unavailable</div>';
+  }
+}
+
+// ── NEWS ──
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+async function loadNews() {
+  try {
+    const r = await fetch('/api/news');
+    const items = await r.json();
+
+    const us = items.filter(i => i.category === 'US' || i.category === 'Business');
+    const intl = items.filter(i => i.category === 'International');
+
+    const renderNews = (list) => list.slice(0, 8).map(item => `
+      <a href="${item.link}" target="_blank" rel="noopener" class="news-item">
+        <div class="news-meta">
+          <span class="news-source">${item.source}</span>
+          <span class="news-cat">${item.category}</span>
+          <span class="news-date">${formatDate(item.date)}</span>
+        </div>
+        <div class="news-title">${item.title}</div>
+        ${item.summary ? `<div class="news-summary">${item.summary}...</div>` : ''}
+        <span class="news-arrow">Read article →</span>
+      </a>
+    `).join('');
+
+    document.getElementById('us-news').innerHTML = renderNews(us) || '<div style="padding:16px;color:var(--muted)">No articles found</div>';
+    document.getElementById('intl-news').innerHTML = renderNews(intl) || '<div style="padding:16px;color:var(--muted)">No articles found</div>';
+    document.getElementById('us-count').textContent = `${us.length} articles`;
+    document.getElementById('intl-count').textContent = `${intl.length} articles`;
+  } catch(e) {
+    document.getElementById('us-news').innerHTML = '<div style="padding:16px;color:var(--muted)">News unavailable</div>';
+    document.getElementById('intl-news').innerHTML = '<div style="padding:16px;color:var(--muted)">News unavailable</div>';
+  }
+}
+
+// ── INIT ──
+loadWeather();
+loadStocks();
+loadNews();
+</script>
+</body>
+</html>
