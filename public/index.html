@@ -51,8 +51,8 @@
     .forecast-day .day-icon{font-size:1.4rem;margin:4px 0}
     .forecast-day .day-hi{font-size:0.95rem;font-weight:700;color:var(--white)}
     .forecast-day .day-lo{font-size:0.78rem;color:var(--muted)}
-    .radar-wrap{height:100%;min-height:620px}
-    .radar-wrap iframe{width:100%;height:620px;min-height:620px;border:none}
+    .radar-wrap{height:100%;min-height:420px}
+    .radar-wrap iframe{width:100%;height:100%;min-height:420px;border:none}
     .refresh-bar{text-align:center;padding:12px;font-size:0.72rem;color:var(--muted)}
     .refresh-bar a{color:var(--blue);text-decoration:none;margin-left:8px}
     footer{text-align:center;padding:20px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border)}
@@ -90,7 +90,7 @@
       <div class="tradingview-widget-container" style="height:420px;width:100%">
         <div class="tradingview-widget-container__widget" style="height:420px;width:100%"></div>
         <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
-        {"colorTheme":"dark","dateRange":"1D","showChart":true,"locale":"en","isTransparent":true,"showSymbolLogo":true,"showFloatingTooltip":false,"width":"100%","height":"420","tabs":[{"title":"Indices","symbols":[{"s":"CAPITALCOM:US100","d":"NASDAQ 100"},{"s":"CAPITALCOM:US500","d":"S&P 500"},{"s":"CAPITALCOM:US2000","d":"Russell 2000"}]},{"title":"Commodities","symbols":[{"s":"CAPITALCOM:GOLD","d":"Gold"},{"s":"CAPITALCOM:SILVER","d":"Silver"},{"s":"TVC:USOIL","d":"WTI Crude Oil"}]},{"title":"Bonds & Crypto","symbols":[{"s":"TVC:US10Y","d":"US 10Y Bond"},{"s":"TVC:DXY","d":"Dollar Index"},{"s":"BITSTAMP:BTCUSD","d":"Bitcoin"},{"s":"BITSTAMP:ETHUSD","d":"Ethereum"}]}]}
+        {"colorTheme":"dark","dateRange":"1D","showChart":true,"locale":"en","isTransparent":true,"showSymbolLogo":true,"showFloatingTooltip":false,"width":"100%","height":"420","tabs":[{"title":"Indices","symbols":[{"s":"CAPITALCOM:US100","d":"NASDAQ 100"},{"s":"CAPITALCOM:US500","d":"S&P 500"},{"s":"TVC:RUT","d":"Russell 2000"}]},{"title":"Commodities","symbols":[{"s":"CAPITALCOM:GOLD","d":"Gold"},{"s":"CAPITALCOM:SILVER","d":"Silver"},{"s":"CAPITALCOM:USOIL","d":"WTI Crude Oil"}]},{"title":"Bonds & Crypto","symbols":[{"s":"FRED:DGS10","d":"US 10Y Bond"},{"s":"CAPITALCOM:DXY","d":"Dollar Index"},{"s":"BITSTAMP:BTCUSD","d":"Bitcoin"},{"s":"BITSTAMP:ETHUSD","d":"Ethereum"}]}]}
         </script>
       </div>
     </div>
