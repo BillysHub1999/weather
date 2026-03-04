@@ -175,9 +175,9 @@ footer{text-align:center;padding:16px;font-size:0.7rem;color:var(--muted);border
   <!-- ② MARKET INTELLIGENCE: 4 stat cards -->
   <div class="stats-row" id="stats-row">
     <div class="stat-card">
-      <div class="stat-label">Put/Call Ratio</div>
+      <div class="stat-label">Fear &amp; Greed Index</div>
       <div class="stat-value" id="pcr-val">--</div>
-      <div class="stat-sub">CBOE Total Options</div>
+      <div class="stat-sub" id="pcr-sub">CNN Market Sentiment</div>
       <div id="pcr-badge"></div>
     </div>
     <div class="stat-card">
@@ -322,14 +322,18 @@ function initLocation(){
 async function loadPCR(){
   try{
     const d=await fetch('api/pcr').then(r=>r.json());
-    if(d.pcr){
-      document.getElementById('pcr-val').textContent=d.pcr.toFixed(2);
-      let label,cls;
-      if(d.pcr>1.2){label='Extreme Fear';cls='badge-red';}
-      else if(d.pcr>0.9){label='Bearish';cls='badge-red';}
-      else if(d.pcr>0.7){label='Neutral';cls='badge-yellow';}
-      else{label='Bullish';cls='badge-green';}
+    if(d.score!=null){
+      document.getElementById('pcr-val').textContent=d.score;
+      const r=d.rating||'';
+      let cls;
+      if(r.includes('extreme fear'))cls='badge-red';
+      else if(r.includes('fear'))cls='badge-red';
+      else if(r.includes('neutral'))cls='badge-yellow';
+      else if(r.includes('extreme greed'))cls='badge-green';
+      else cls='badge-green';
+      const label=r.split(' ').map(w=>w[0].toUpperCase()+w.slice(1)).join(' ');
       document.getElementById('pcr-badge').innerHTML=`<span class="stat-badge ${cls}">${label}</span>`;
+      document.getElementById('pcr-sub').textContent=`Prev close: ${d.prev_close} · 1wk ago: ${d.prev_week}`;
     } else {
       document.getElementById('pcr-val').textContent='N/A';
     }

@@ -38,30 +38,30 @@ app.get('/api/news', async (req, res) => {
   } catch(err) { res.status(500).json({ error: err.message }); }
 });
 
-// ── PUT/CALL RATIO (CBOE) ──
+// ── FEAR & GREED INDEX (CNN) ──
 app.get('/api/pcr', async (req, res) => {
   try {
-    const r = await fetch('https://www.cboe.com/us/options/market_statistics/daily/', {
-      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
+    const r = await fetch('https://production.dataviz.cnn.io/index/fearandgreed/graphdata', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
+        'Referer': 'https://www.cnn.com/markets/fear-and-greed',
+        'Accept': 'application/json'
+      }
     });
-    const html = await r.text();
-    // Parse total P/C ratio from CBOE page
-    const match = html.match(/Total Put\/Call Ratio[\s\S]*?<td[^>]*>([\d.]+)<\/td>/i)
-      || html.match(/(\d\.\d{2})<\/td>[\s\S]{0,200}?Total/i);
-    if (match) {
-      return res.json({ pcr: parseFloat(match[1]), source: 'CBOE', date: new Date().toISOString() });
+    const d = await r.json();
+    const fg = d?.fear_and_greed;
+    if (fg) {
+      return res.json({
+        score: Math.round(fg.score),
+        rating: fg.rating,
+        prev_close: Math.round(fg.previous_close),
+        prev_week: Math.round(fg.previous_1_week),
+        prev_month: Math.round(fg.previous_1_month),
+        timestamp: fg.timestamp
+      });
     }
-    // Fallback: try CBOE CSV
-    const csv = await fetch('https://cdn.cboe.com/api/global/us_indices/daily_prices/SPX_put_call_ratio.json', {
-      headers: { 'User-Agent': 'Mozilla/5.0' }
-    });
-    if (csv.ok) {
-      const d = await csv.json();
-      const last = d?.data?.slice(-1)[0];
-      if (last) return res.json({ pcr: parseFloat(last[1]), source: 'CBOE SPX', date: last[0] });
-    }
-    res.json({ pcr: null, error: 'unavailable' });
-  } catch(e) { res.json({ pcr: null, error: e.message }); }
+    res.json({ score: null, error: 'unavailable' });
+  } catch(e) { res.json({ score: null, error: e.message }); }
 });
 
 // ── YIELD CURVE (US Treasury API) ──
@@ -86,30 +86,41 @@ app.get('/api/yields', async (req, res) => {
   } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
-// ── TRENDING TICKERS (Yahoo Finance) ──
+// ── TRENDING TICKERS (Yahoo Finance query2) ──
+const sleep = ms => new Promise(r => setTimeout(r, ms));
 app.get('/api/trending', async (req, res) => {
   try {
-    const r = await fetch('https://query1.finance.yahoo.com/v1/finance/trending/US?count=10&useQuotes=true', {
-      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        'Accept': 'application/json' }
-    });
-    const data = await r.json();
-    const quotes = data?.finance?.result?.[0]?.quotes || [];
-    // Enrich with prices
-    const symbols = quotes.map(q => q.symbol).join(',');
-    const priceR = await fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols}`, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
-    });
-    const priceData = await priceR.json();
-    const results = (priceData?.quoteResponse?.result || []).map(q => ({
-      symbol: q.symbol,
-      name: q.shortName || q.longName || q.symbol,
-      price: q.regularMarketPrice?.toFixed(2),
-      change: q.regularMarketChange?.toFixed(2),
-      changePct: q.regularMarketChangePercent?.toFixed(2),
-      volume: q.regularMarketVolume,
-    }));
-    res.json(results.slice(0, 10));
+    const yHeaders = {
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+      'Accept': 'application/json',
+      'Referer': 'https://finance.yahoo.com'
+    };
+    const trendR = await fetch('https://query2.finance.yahoo.com/v1/finance/trending/US?count=10', { headers: yHeaders });
+    const trendData = await trendR.json();
+    const symbols = (trendData?.finance?.result?.[0]?.quotes || []).map(q => q.symbol).slice(0, 10);
+    if (!symbols.length) return res.json([]);
+    // Enrich one at a time to avoid 429
+    const results = [];
+    for (const sym of symbols) {
+      try {
+        await sleep(250);
+        const r = await fetch(`https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=1d&range=1d`, { headers: yHeaders });
+        const d = await r.json();
+        const meta = d?.chart?.result?.[0]?.meta || {};
+        const price = meta.regularMarketPrice;
+        const prev = meta.chartPreviousClose || meta.previousClose;
+        const change = price && prev ? price - prev : null;
+        const changePct = change && prev ? (change / prev) * 100 : null;
+        results.push({
+          symbol: sym,
+          name: meta.shortName || meta.longName || sym,
+          price: price?.toFixed(2),
+          change: change?.toFixed(2),
+          changePct: changePct?.toFixed(2),
+        });
+      } catch(e) { results.push({ symbol: sym, name: sym, price: null, change: null, changePct: null }); }
+    }
+    res.json(results);
   } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
