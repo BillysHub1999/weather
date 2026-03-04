@@ -45,14 +45,14 @@
     .weather-stat .val{font-size:1rem;font-weight:600;color:var(--white)}
     .forecast{border-top:1px solid var(--border);padding-top:12px;margin-top:4px}
     .forecast-title{font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
-    .forecast-days{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+    .forecast-days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
     .forecast-day{background:var(--bg3);border-radius:8px;padding:10px;text-align:center}
     .forecast-day .day-name{font-size:0.7rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px}
     .forecast-day .day-icon{font-size:1.4rem;margin:4px 0}
     .forecast-day .day-hi{font-size:0.95rem;font-weight:700;color:var(--white)}
     .forecast-day .day-lo{font-size:0.78rem;color:var(--muted)}
-    .radar-wrap{height:100%;min-height:420px}
-    .radar-wrap iframe{width:100%;height:100%;min-height:420px;border:none}
+    .radar-wrap{height:100%;min-height:620px}
+    .radar-wrap iframe{width:100%;height:620px;min-height:620px;border:none}
     .refresh-bar{text-align:center;padding:12px;font-size:0.72rem;color:var(--muted)}
     .refresh-bar a{color:var(--blue);text-decoration:none;margin-left:8px}
     footer{text-align:center;padding:20px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border)}
@@ -90,7 +90,7 @@
       <div class="tradingview-widget-container" style="height:420px;width:100%">
         <div class="tradingview-widget-container__widget" style="height:420px;width:100%"></div>
         <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
-        {"colorTheme":"dark","dateRange":"1D","showChart":true,"locale":"en","isTransparent":true,"showSymbolLogo":true,"showFloatingTooltip":false,"width":"100%","height":"420","tabs":[{"title":"Indices","symbols":[{"s":"CAPITALCOM:US100","d":"NASDAQ 100"},{"s":"CAPITALCOM:US500","d":"S&P 500"},{"s":"TVC:RUT","d":"Russell 2000"}]},{"title":"Commodities","symbols":[{"s":"CAPITALCOM:GOLD","d":"Gold"},{"s":"CAPITALCOM:SILVER","d":"Silver"},{"s":"CAPITALCOM:USOIL","d":"WTI Crude Oil"}]},{"title":"Bonds & Crypto","symbols":[{"s":"FRED:DGS10","d":"US 10Y Bond"},{"s":"CAPITALCOM:DXY","d":"Dollar Index"},{"s":"BITSTAMP:BTCUSD","d":"Bitcoin"},{"s":"BITSTAMP:ETHUSD","d":"Ethereum"}]}]}
+        {"colorTheme":"dark","dateRange":"1D","showChart":true,"locale":"en","isTransparent":true,"showSymbolLogo":true,"showFloatingTooltip":false,"width":"100%","height":"420","tabs":[{"title":"Indices","symbols":[{"s":"CAPITALCOM:US100","d":"NASDAQ 100"},{"s":"CAPITALCOM:US500","d":"S&P 500"},{"s":"AMEX:IWM","d":"Russell 2000 (IWM)"}]},{"title":"Commodities","symbols":[{"s":"CAPITALCOM:GOLD","d":"Gold"},{"s":"CAPITALCOM:SILVER","d":"Silver"},{"s":"AMEX:USO","d":"WTI Crude (USO)"}]},{"title":"Bonds & Crypto","symbols":[{"s":"FRED:DGS10","d":"US 10Y Bond"},{"s":"CAPITALCOM:DXY","d":"Dollar Index"},{"s":"BITSTAMP:BTCUSD","d":"Bitcoin"},{"s":"BITSTAMP:ETHUSD","d":"Ethereum"}]}]}
         </script>
       </div>
     </div>
@@ -148,14 +148,14 @@ function loadWeatherForCoords(lat,lon,cityName){
   document.getElementById('header-loc').textContent=cityName;
   document.getElementById('weather-loc-header').textContent=cityName;
   document.getElementById('windy-frame').src=`https://embed.windy.com/embed.html?type=map&location=coordinates&metricWind=mph&metricTemp=%C2%B0F&lat=${lat}&lon=${lon}&zoom=6&overlay=rain&product=ecmwf&level=surface&pressure=true`;
-  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=4`)
+  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=8`)
     .then(r=>r.json()).then(d=>{
       const c=d.current||{};const dy=d.daily||{};
       const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
       let fc='';
-      for(let i=1;i<=3;i++){
+      for(let i=1;i<=7;i++){
         const date=new Date(dy.time[i]+'T12:00:00');
-        const dn=i===1?'Tomorrow':days[date.getDay()];
+        const dn=i===1?'Tomorrow':(i===2?'Day After':days[date.getDay()]);
         fc+=`<div class="forecast-day"><div class="day-name">${dn}</div><div class="day-icon">${WX_I[dy.weather_code[i]]||'🌡️'}</div><div class="day-hi">${Math.round(dy.temperature_2m_max[i])}°</div><div class="day-lo">${Math.round(dy.temperature_2m_min[i])}°</div></div>`;
       }
       document.getElementById('weather-body').innerHTML=`
