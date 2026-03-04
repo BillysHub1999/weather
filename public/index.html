@@ -45,12 +45,12 @@
     .weather-stat .val{font-size:1rem;font-weight:600;color:var(--white)}
     .forecast{border-top:1px solid var(--border);padding-top:12px;margin-top:4px}
     .forecast-title{font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
-    .forecast-days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-    .forecast-day{background:var(--bg3);border-radius:8px;padding:10px;text-align:center}
-    .forecast-day .day-name{font-size:0.7rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px}
-    .forecast-day .day-icon{font-size:1.4rem;margin:4px 0}
-    .forecast-day .day-hi{font-size:0.95rem;font-weight:700;color:var(--white)}
-    .forecast-day .day-lo{font-size:0.78rem;color:var(--muted)}
+    .forecast-days{display:flex;flex-direction:column;gap:4px}
+    .forecast-day{background:var(--bg3);border-radius:8px;padding:6px 12px;display:flex;align-items:center;justify-content:space-between}
+    .forecast-day .day-name{font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;width:80px}
+    .forecast-day .day-icon{font-size:1.2rem}
+    .forecast-day .day-hi{font-size:0.9rem;font-weight:700;color:var(--white)}
+    .forecast-day .day-lo{font-size:0.75rem;color:var(--muted);width:36px;text-align:right}
     .radar-wrap{height:100%;min-height:620px}
     .radar-wrap iframe{width:100%;height:620px;min-height:620px;border:none}
     .refresh-bar{text-align:center;padding:12px;font-size:0.72rem;color:var(--muted)}
@@ -155,7 +155,7 @@ function loadWeatherForCoords(lat,lon,cityName){
       let fc='';
       for(let i=1;i<=7;i++){
         const date=new Date(dy.time[i]+'T12:00:00');
-        const dn=i===1?'Tomorrow':(i===2?'Day After':days[date.getDay()]);
+        const dn=i===1?'Tomorrow':days[date.getDay()];
         fc+=`<div class="forecast-day"><div class="day-name">${dn}</div><div class="day-icon">${WX_I[dy.weather_code[i]]||'🌡️'}</div><div class="day-hi">${Math.round(dy.temperature_2m_max[i])}°</div><div class="day-lo">${Math.round(dy.temperature_2m_min[i])}°</div></div>`;
       }
       document.getElementById('weather-body').innerHTML=`
@@ -167,7 +167,7 @@ function loadWeatherForCoords(lat,lon,cityName){
           <div class="weather-stat"><div class="lbl">Humidity</div><div class="val">${c.relative_humidity_2m}%</div></div>
           <div class="weather-stat"><div class="lbl">Wind</div><div class="val">${Math.round(c.wind_speed_10m)} mph</div></div>
         </div>
-        <div class="forecast"><div class="forecast-title">3-Day Forecast</div><div class="forecast-days">${fc}</div></div>`;
+        <div class="forecast"><div class="forecast-title">7-Day Forecast</div><div class="forecast-days">${fc}</div></div>`;
     }).catch(()=>{document.getElementById('weather-body').innerHTML='<div style="color:var(--muted)">Weather unavailable</div>';});
 }
 
