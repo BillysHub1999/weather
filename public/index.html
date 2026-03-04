@@ -1,64 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Daily Briefing</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet"/>
-  <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--bg:#0d1117;--bg2:#161b22;--bg3:#1c2230;--border:rgba(255,255,255,0.08);--white:#e6edf3;--muted:#8b949e;--green:#3fb950;--red:#f85149;--blue:#58a6ff;--gold:#d4a843;--purple:#bc8cff}
-    html,body{min-height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:var(--white);font-size:14px}
-    header{background:linear-gradient(135deg,#0d1117,#161b22);border-bottom:1px solid var(--border);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:1000}
-    .logo h1{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--white)}
-    .logo span{font-size:0.68rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
-    .header-clocks{display:flex;gap:28px}
-    .clock-block{text-align:center}
-    .clock-tz{font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px}
-    .clock-time{font-size:1.15rem;font-weight:700;color:var(--white)}
-    .clock-date{font-size:0.68rem;color:var(--muted)}
-    main{max-width:1440px;margin:0 auto;padding:20px 20px 60px;display:grid;gap:16px}
-    .card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden}
-    .card-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-    .card-header h2{font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted)}
-    .card-header span{font-size:0.7rem;color:var(--muted)}
-    .news-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-    @media(max-width:900px){.news-row{grid-template-columns:1fr}}
-    .news-item{display:block;padding:12px 16px;border-bottom:1px solid var(--border);text-decoration:none;color:inherit;transition:background 0.15s}
-    .news-item:last-child{border-bottom:none}
-    .news-item:hover{background:var(--bg3)}
-    .news-meta{display:flex;align-items:center;gap:8px;margin-bottom:5px}
-    .news-source{font-size:0.65rem;font-weight:600;padding:2px 7px;border-radius:10px;background:rgba(88,166,255,0.1);color:var(--blue)}
-    .news-date{font-size:0.65rem;color:var(--muted);margin-left:auto}
-    .news-title{font-size:0.88rem;font-weight:500;color:var(--white);line-height:1.4;margin-bottom:4px}
-    .news-summary{font-size:0.75rem;color:var(--muted);line-height:1.4}
-    .news-arrow{color:var(--blue);font-size:0.7rem;margin-top:4px;display:block}
-    .weather-row{display:grid;grid-template-columns:340px 1fr;gap:16px}
-    @media(max-width:900px){.weather-row{grid-template-columns:1fr}}
-    .weather-body{padding:16px}
-    .weather-loc{font-size:0.75rem;color:var(--blue);margin-bottom:8px}
-    .weather-temp{font-size:3.2rem;font-weight:700;line-height:1;color:var(--white)}
-    .weather-cond{font-size:1rem;color:var(--muted);margin:4px 0 14px}
-    .weather-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-    .weather-stat{background:var(--bg3);border-radius:8px;padding:10px 12px}
-    .weather-stat .lbl{font-size:0.68rem;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.5px}
-    .weather-stat .val{font-size:1rem;font-weight:600;color:var(--white)}
-    .forecast{border-top:1px solid var(--border);padding-top:12px;margin-top:4px}
-    .forecast-title{font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
-    .forecast-days{display:flex;flex-direction:column;gap:4px}
-    .forecast-day{background:var(--bg3);border-radius:8px;padding:6px 12px;display:flex;align-items:center;justify-content:space-between}
-    .forecast-day .day-name{font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;width:80px}
-    .forecast-day .day-icon{font-size:1.2rem}
-    .forecast-day .day-hi{font-size:0.9rem;font-weight:700;color:var(--white)}
-    .forecast-day .day-lo{font-size:0.75rem;color:var(--muted);width:36px;text-align:right}
-    .radar-wrap{height:100%;min-height:620px}
-    .radar-wrap iframe{width:100%;height:620px;min-height:620px;border:none}
-    .refresh-bar{text-align:center;padding:12px;font-size:0.72rem;color:var(--muted)}
-    .refresh-bar a{color:var(--blue);text-decoration:none;margin-left:8px}
-    footer{text-align:center;padding:20px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border)}
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Daily Briefing</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--bg2:#161b22;--bg3:#1c2230;--border:rgba(255,255,255,0.08);--white:#e6edf3;--muted:#8b949e;--green:#3fb950;--red:#f85149;--blue:#58a6ff;--gold:#d4a843;--purple:#bc8cff;--orange:#e8975a}
+html,body{min-height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:var(--white);font-size:14px}
+
+/* HEADER */
+header{background:linear-gradient(135deg,#0d1117,#161b22);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:1000}
+.logo h1{font-family:'Playfair Display',serif;font-size:1rem;color:var(--white)}
+.logo span{font-size:0.65rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.header-clocks{display:flex;gap:24px}
+.clock-block{text-align:center}
+.clock-tz{font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:1px}
+.clock-time{font-size:1.1rem;font-weight:700;color:var(--white)}
+.clock-date{font-size:0.65rem;color:var(--muted)}
+
+/* LAYOUT */
+main{max-width:1500px;margin:0 auto;padding:16px 16px 60px;display:grid;gap:14px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.card-header{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-header h2{font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted)}
+.card-header .hdr-right{font-size:0.68rem;color:var(--muted)}
+
+/* 2-COL / 3-COL ROWS */
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.row-2-3{display:grid;grid-template-columns:2fr 1fr;gap:14px}
+.row-1-2{display:grid;grid-template-columns:1fr 2fr;gap:14px}
+@media(max-width:1100px){.row-2,.row-3,.row-2-3,.row-1-2{grid-template-columns:1fr}}
+
+/* MARKET STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:1100px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+.stat-label{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.stat-value{font-size:1.6rem;font-weight:700;color:var(--white);line-height:1}
+.stat-sub{font-size:0.72rem;color:var(--muted);margin-top:5px}
+.stat-badge{display:inline-block;font-size:0.65rem;padding:2px 8px;border-radius:10px;font-weight:600;margin-top:6px}
+.badge-green{background:rgba(63,185,80,0.15);color:var(--green)}
+.badge-red{background:rgba(248,81,73,0.15);color:var(--red)}
+.badge-yellow{background:rgba(212,168,67,0.15);color:var(--gold)}
+.badge-blue{background:rgba(88,166,255,0.12);color:var(--blue)}
+.up{color:var(--green)}
+.down{color:var(--red)}
+.neutral{color:var(--muted)}
+
+/* TRENDING */
+.trending-list{padding:4px 0}
+.trending-item{display:flex;align-items:center;padding:7px 14px;border-bottom:1px solid var(--border);gap:10px}
+.trending-item:last-child{border-bottom:none}
+.t-rank{font-size:0.65rem;color:var(--muted);width:18px;text-align:center;flex-shrink:0}
+.t-symbol{font-size:0.85rem;font-weight:700;color:var(--white);width:60px;flex-shrink:0}
+.t-name{font-size:0.72rem;color:var(--muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.t-price{font-size:0.82rem;font-weight:600;color:var(--white);text-align:right;width:60px;flex-shrink:0}
+.t-chg{font-size:0.75rem;font-weight:600;text-align:right;width:54px;flex-shrink:0}
+
+/* SECTOR HEATMAP */
+.sector-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:12px}
+@media(max-width:900px){.sector-grid{grid-template-columns:repeat(3,1fr)}}
+.sector-tile{border-radius:8px;padding:10px 8px;text-align:center;cursor:default;transition:opacity 0.15s}
+.sector-tile:hover{opacity:0.85}
+.sector-tile .s-name{font-size:0.65rem;color:rgba(255,255,255,0.8);font-weight:500;margin-bottom:3px;line-height:1.2}
+.sector-tile .s-pct{font-size:1rem;font-weight:700;color:#fff}
+.sector-tile .s-etf{font-size:0.6rem;color:rgba(255,255,255,0.55);margin-top:2px}
+
+/* NEWS */
+.news-item{display:block;padding:10px 14px;border-bottom:1px solid var(--border);text-decoration:none;color:inherit;transition:background 0.15s}
+.news-item:last-child{border-bottom:none}
+.news-item:hover{background:var(--bg3)}
+.news-meta{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.news-src{font-size:0.62rem;font-weight:600;padding:2px 6px;border-radius:8px;background:rgba(88,166,255,0.1);color:var(--blue)}
+.news-src.mkt{background:rgba(63,185,80,0.1);color:var(--green)}
+.news-date{font-size:0.62rem;color:var(--muted);margin-left:auto}
+.news-title{font-size:0.84rem;font-weight:500;line-height:1.4;color:var(--white)}
+
+/* YIELD CURVE */
+.yield-bars{padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.yield-row{display:flex;align-items:center;gap:10px}
+.yield-label{font-size:0.68rem;color:var(--muted);width:36px;flex-shrink:0}
+.yield-bar-wrap{flex:1;background:var(--bg3);border-radius:4px;height:6px;overflow:hidden}
+.yield-bar{height:100%;border-radius:4px;background:linear-gradient(90deg,#3b82f6,#8b5cf6);transition:width 0.6s ease}
+.yield-val{font-size:0.75rem;font-weight:600;color:var(--white);width:36px;text-align:right;flex-shrink:0}
+
+/* ECON CALENDAR */
+.econ-list{padding:4px 0}
+.econ-item{display:flex;align-items:center;padding:8px 14px;border-bottom:1px solid var(--border);gap:10px}
+.econ-item:last-child{border-bottom:none}
+.econ-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot-high{background:var(--red)}
+.dot-med{background:var(--gold)}
+.dot-low{background:var(--muted)}
+.econ-date{font-size:0.68rem;color:var(--muted);width:70px;flex-shrink:0}
+.econ-name{font-size:0.8rem;color:var(--white);flex:1}
+.econ-impact{font-size:0.62rem;padding:1px 6px;border-radius:6px;font-weight:600;flex-shrink:0}
+.impact-high{background:rgba(248,81,73,0.15);color:var(--red)}
+.impact-med{background:rgba(212,168,67,0.15);color:var(--gold)}
+.impact-low{background:rgba(139,148,158,0.15);color:var(--muted)}
+
+/* WEATHER */
+.weather-body{padding:14px}
+.weather-loc{font-size:0.72rem;color:var(--blue);margin-bottom:6px}
+.weather-temp{font-size:2.8rem;font-weight:700;line-height:1}
+.weather-cond{font-size:0.9rem;color:var(--muted);margin:4px 0 12px}
+.weather-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px}
+.weather-stat{background:var(--bg3);border-radius:8px;padding:8px 10px}
+.weather-stat .lbl{font-size:0.63rem;color:var(--muted);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.5px}
+.weather-stat .val{font-size:0.92rem;font-weight:600}
+.forecast{border-top:1px solid var(--border);padding-top:10px}
+.forecast-title{font-size:0.63rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.forecast-days{display:flex;flex-direction:column;gap:4px}
+.forecast-day{background:var(--bg3);border-radius:7px;padding:5px 10px;display:flex;align-items:center;justify-content:space-between}
+.forecast-day .day-name{font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;width:76px}
+.forecast-day .day-icon{font-size:1.1rem}
+.forecast-day .day-hi{font-size:0.88rem;font-weight:700}
+.forecast-day .day-lo{font-size:0.72rem;color:var(--muted);width:32px;text-align:right}
+
+/* RADAR */
+.radar-wrap iframe{width:100%;height:620px;border:none}
+
+/* FOOTER */
+.refresh-bar{text-align:center;padding:10px;font-size:0.7rem;color:var(--muted)}
+.refresh-bar a{color:var(--blue);text-decoration:none;margin-left:8px}
+footer{text-align:center;padding:16px;font-size:0.7rem;color:var(--muted);border-top:1px solid var(--border)}
+
+/* SPINNER */
+.loading{padding:20px;text-align:center;color:var(--muted);font-size:0.8rem}
+</style>
 </head>
 <body>
+
 <header>
   <div class="logo">
     <h1>📋 Daily Briefing</h1>
@@ -80,46 +156,100 @@
 
 <main>
 
-  <!-- MARKETS (TradingView) -->
+  <!-- ① MARKETS (TradingView) -->
   <div class="card">
     <div class="card-header">
       <h2>📈 Markets & Futures</h2>
-      <span id="market-time"></span>
+      <span class="hdr-right" id="market-time"></span>
     </div>
     <div style="height:420px">
       <div class="tradingview-widget-container" style="height:420px;width:100%">
         <div class="tradingview-widget-container__widget" style="height:420px;width:100%"></div>
         <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
-        {"colorTheme":"dark","dateRange":"1D","showChart":true,"locale":"en","isTransparent":true,"showSymbolLogo":true,"showFloatingTooltip":false,"width":"100%","height":"420","tabs":[{"title":"Indices","symbols":[{"s":"CAPITALCOM:US100","d":"NASDAQ 100"},{"s":"CAPITALCOM:US500","d":"S&P 500"},{"s":"AMEX:IWM","d":"Russell 2000 (IWM)"}]},{"title":"Commodities","symbols":[{"s":"CAPITALCOM:GOLD","d":"Gold"},{"s":"CAPITALCOM:SILVER","d":"Silver"},{"s":"AMEX:USO","d":"WTI Crude (USO)"}]},{"title":"Bonds & Crypto","symbols":[{"s":"FRED:DGS10","d":"US 10Y Bond"},{"s":"CAPITALCOM:DXY","d":"Dollar Index"},{"s":"BITSTAMP:BTCUSD","d":"Bitcoin"},{"s":"BITSTAMP:ETHUSD","d":"Ethereum"}]}]}
+        {"colorTheme":"dark","dateRange":"1D","showChart":true,"locale":"en","isTransparent":true,"showSymbolLogo":true,"showFloatingTooltip":false,"width":"100%","height":"420","tabs":[{"title":"Indices","symbols":[{"s":"CAPITALCOM:US100","d":"NASDAQ 100"},{"s":"CAPITALCOM:US500","d":"S&P 500"},{"s":"AMEX:IWM","d":"Russell 2000"}]},{"title":"Commodities","symbols":[{"s":"CAPITALCOM:GOLD","d":"Gold"},{"s":"CAPITALCOM:SILVER","d":"Silver"},{"s":"AMEX:USO","d":"WTI Crude (USO)"}]},{"title":"Bonds & Crypto","symbols":[{"s":"FRED:DGS10","d":"US 10Y Bond"},{"s":"CAPITALCOM:DXY","d":"Dollar Index"},{"s":"BITSTAMP:BTCUSD","d":"Bitcoin"},{"s":"BITSTAMP:ETHUSD","d":"Ethereum"}]}]}
         </script>
       </div>
     </div>
   </div>
 
-  <!-- NEWS -->
-  <div class="news-row">
-    <div class="card">
-      <div class="card-header"><h2>🇺🇸 US News</h2><span>Top 5</span></div>
-      <div id="us-news"><div style="padding:16px;color:var(--muted);font-size:0.8rem">Loading...</div></div>
+  <!-- ② MARKET INTELLIGENCE: 4 stat cards -->
+  <div class="stats-row" id="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Put/Call Ratio</div>
+      <div class="stat-value" id="pcr-val">--</div>
+      <div class="stat-sub">CBOE Total Options</div>
+      <div id="pcr-badge"></div>
     </div>
-    <div class="card">
-      <div class="card-header"><h2>🌍 International News</h2><span>Top 5</span></div>
-      <div id="intl-news"><div style="padding:16px;color:var(--muted);font-size:0.8rem">Loading...</div></div>
+    <div class="stat-card">
+      <div class="stat-label">2Y / 10Y Spread</div>
+      <div class="stat-value" id="spread-val">--</div>
+      <div class="stat-sub" id="spread-sub">Treasury Yield Curve</div>
+      <div id="spread-badge"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">2Y Yield</div>
+      <div class="stat-value" id="y2-val">--</div>
+      <div class="stat-sub">US 2-Year Treasury</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">10Y Yield</div>
+      <div class="stat-value" id="y10-val">--</div>
+      <div class="stat-sub">US 10-Year Treasury</div>
     </div>
   </div>
 
-  <!-- WEATHER (bottom) -->
-  <div class="weather-row">
+  <!-- ③ SECTOR HEATMAP + TRENDING -->
+  <div class="row-2-3">
     <div class="card">
-      <div class="card-header"><h2>🌤️ Weather</h2><span id="weather-loc-header">Locating...</span></div>
-      <div class="weather-body" id="weather-body"><div style="color:var(--muted);font-size:0.8rem">Detecting location...</div></div>
+      <div class="card-header"><h2>🔥 Sector Performance</h2><span class="hdr-right">Today · ETF Proxies</span></div>
+      <div class="sector-grid" id="sector-grid"><div class="loading">Loading sectors...</div></div>
     </div>
     <div class="card">
-      <div class="card-header"><h2>🛰️ Live Radar</h2><span>Animated · Click ▶ to play</span></div>
+      <div class="card-header"><h2>🚀 Trending Tickers</h2><span class="hdr-right">Yahoo Finance · US</span></div>
+      <div class="trending-list" id="trending-list"><div class="loading">Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- ④ YIELD CURVE VISUAL + ECON CALENDAR -->
+  <div class="row-1-2">
+    <div class="card">
+      <div class="card-header"><h2>📊 Yield Curve</h2><span class="hdr-right" id="yield-date"></span></div>
+      <div class="yield-bars" id="yield-bars"><div class="loading">Loading...</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h2>📅 Economic Calendar</h2><span class="hdr-right">Key Events This Week</span></div>
+      <div class="econ-list" id="econ-calendar"></div>
+    </div>
+  </div>
+
+  <!-- ⑤ MARKET NEWS + GENERAL NEWS -->
+  <div class="row-2">
+    <div class="card">
+      <div class="card-header"><h2>📰 Market News</h2><span class="hdr-right">Top 5</span></div>
+      <div id="mkt-news"><div class="loading">Loading...</div></div>
+    </div>
+    <div class="row-2" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div class="card">
+        <div class="card-header"><h2>🇺🇸 US News</h2><span class="hdr-right">Top 5</span></div>
+        <div id="us-news"><div class="loading">Loading...</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h2>🌍 International</h2><span class="hdr-right">Top 5</span></div>
+        <div id="intl-news"><div class="loading">Loading...</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑥ WEATHER + RADAR (bottom) -->
+  <div style="display:grid;grid-template-columns:300px 1fr;gap:14px">
+    <div class="card">
+      <div class="card-header"><h2>🌤️ Weather</h2><span class="hdr-right" id="weather-loc-header">Locating...</span></div>
+      <div class="weather-body" id="weather-body"><div class="loading">Detecting location...</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h2>🛰️ Live Radar</h2><span class="hdr-right">Click ▶ to animate</span></div>
       <div class="radar-wrap">
-        <iframe id="windy-frame"
-          src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricWind=mph&metricTemp=%C2%B0F&lat=45.42&lon=-122.70&zoom=6&overlay=rain&product=ecmwf&level=surface&pressure=true"
-          allowfullscreen></iframe>
+        <iframe id="windy-frame" src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricWind=mph&metricTemp=%C2%B0F&lat=45.42&lon=-122.70&zoom=6&overlay=rain&product=ecmwf&level=surface&pressure=true" allowfullscreen></iframe>
       </div>
     </div>
   </div>
@@ -130,9 +260,7 @@
 <footer>Daily Briefing · Powered by OpenClaw</footer>
 
 <script>
-const WX={0:'☀️ Clear',1:'🌤️ Mainly Clear',2:'⛅ Partly Cloudy',3:'☁️ Overcast',45:'🌫️ Foggy',48:'🌫️ Icy Fog',51:'🌦️ Light Drizzle',53:'🌦️ Drizzle',55:'🌧️ Heavy Drizzle',61:'🌧️ Light Rain',63:'🌧️ Rain',65:'🌧️ Heavy Rain',71:'🌨️ Light Snow',73:'❄️ Snow',75:'❄️ Heavy Snow',80:'🌦️ Showers',81:'🌧️ Heavy Showers',95:'⛈️ Thunderstorm'};
-const WX_I={0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'❄️',75:'❄️',80:'🌦️',81:'🌧️',95:'⛈️'};
-
+// ── CLOCKS ──
 function updateClocks(){
   const now=new Date();
   document.getElementById('clock-pt').textContent=now.toLocaleTimeString('en-US',{timeZone:'America/Los_Angeles',hour:'2-digit',minute:'2-digit'});
@@ -144,9 +272,14 @@ function updateClocks(){
 }
 updateClocks();setInterval(updateClocks,1000);
 
-function loadWeatherForCoords(lat,lon,cityName){
-  document.getElementById('header-loc').textContent=cityName;
-  document.getElementById('weather-loc-header').textContent=cityName;
+// ── WEATHER CODES ──
+const WX={0:'☀️ Clear',1:'🌤️ Mainly Clear',2:'⛅ Partly Cloudy',3:'☁️ Overcast',45:'🌫️ Foggy',48:'🌫️ Icy Fog',51:'🌦️ Light Drizzle',53:'🌦️ Drizzle',55:'🌧️ Heavy Drizzle',61:'🌧️ Light Rain',63:'🌧️ Rain',65:'🌧️ Heavy Rain',71:'🌨️ Light Snow',73:'❄️ Snow',75:'❄️ Heavy Snow',80:'🌦️ Showers',81:'🌧️ Heavy Showers',95:'⛈️ Thunderstorm'};
+const WXI={0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'❄️',75:'❄️',80:'🌦️',81:'🌧️',95:'⛈️'};
+
+// ── GEOLOCATION ──
+function loadWeather(lat,lon,city){
+  document.getElementById('header-loc').textContent=city;
+  document.getElementById('weather-loc-header').textContent=city;
   document.getElementById('windy-frame').src=`https://embed.windy.com/embed.html?type=map&location=coordinates&metricWind=mph&metricTemp=%C2%B0F&lat=${lat}&lon=${lon}&zoom=6&overlay=rain&product=ecmwf&level=surface&pressure=true`;
   fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=8`)
     .then(r=>r.json()).then(d=>{
@@ -154,12 +287,12 @@ function loadWeatherForCoords(lat,lon,cityName){
       const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
       let fc='';
       for(let i=1;i<=7;i++){
-        const date=new Date(dy.time[i]+'T12:00:00');
-        const dn=i===1?'Tomorrow':days[date.getDay()];
-        fc+=`<div class="forecast-day"><div class="day-name">${dn}</div><div class="day-icon">${WX_I[dy.weather_code[i]]||'🌡️'}</div><div class="day-hi">${Math.round(dy.temperature_2m_max[i])}°</div><div class="day-lo">${Math.round(dy.temperature_2m_min[i])}°</div></div>`;
+        const dt=new Date(dy.time[i]+'T12:00:00');
+        const dn=i===1?'Tomorrow':days[dt.getDay()];
+        fc+=`<div class="forecast-day"><div class="day-name">${dn}</div><div class="day-icon">${WXI[dy.weather_code[i]]||'🌡️'}</div><div class="day-hi">${Math.round(dy.temperature_2m_max[i])}°</div><div class="day-lo">${Math.round(dy.temperature_2m_min[i])}°</div></div>`;
       }
       document.getElementById('weather-body').innerHTML=`
-        <div class="weather-loc">📍 ${cityName}</div>
+        <div class="weather-loc">📍 ${city}</div>
         <div class="weather-temp">${Math.round(c.temperature_2m)}°F</div>
         <div class="weather-cond">${WX[c.weather_code]||'🌡️ Unknown'}</div>
         <div class="weather-grid">
@@ -168,49 +301,182 @@ function loadWeatherForCoords(lat,lon,cityName){
           <div class="weather-stat"><div class="lbl">Wind</div><div class="val">${Math.round(c.wind_speed_10m)} mph</div></div>
         </div>
         <div class="forecast"><div class="forecast-title">7-Day Forecast</div><div class="forecast-days">${fc}</div></div>`;
-    }).catch(()=>{document.getElementById('weather-body').innerHTML='<div style="color:var(--muted)">Weather unavailable</div>';});
+    }).catch(()=>{document.getElementById('weather-body').innerHTML='<div style="color:var(--muted);padding:10px">Weather unavailable</div>';});
 }
 
 function initLocation(){
   if(navigator.geolocation){
     navigator.geolocation.getCurrentPosition(pos=>{
-      const lat=pos.coords.latitude.toFixed(4);
-      const lon=pos.coords.longitude.toFixed(4);
+      const lat=pos.coords.latitude.toFixed(4),lon=pos.coords.longitude.toFixed(4);
       fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`)
-        .then(r=>r.json()).then(data=>{
-          const city=data.address?.city||data.address?.town||data.address?.village||data.address?.county||'Current Location';
-          const state=data.address?.state_code||'';
-          loadWeatherForCoords(lat,lon,state?`${city}, ${state}`:city);
-        }).catch(()=>loadWeatherForCoords(lat,lon,'Current Location'));
-    },()=>loadWeatherForCoords(45.4207,-122.7009,'Lake Oswego, OR'),{timeout:8000});
-  } else {
-    loadWeatherForCoords(45.4207,-122.7009,'Lake Oswego, OR');
-  }
+        .then(r=>r.json()).then(d=>{
+          const city=d.address?.city||d.address?.town||d.address?.village||d.address?.county||'Current Location';
+          const state=d.address?.state_code||'';
+          loadWeather(lat,lon,state?`${city}, ${state}`:city);
+        }).catch(()=>loadWeather(lat,lon,'Current Location'));
+    },()=>loadWeather(45.4207,-122.7009,'Lake Oswego, OR'),{timeout:8000});
+  } else loadWeather(45.4207,-122.7009,'Lake Oswego, OR');
 }
 
-function formatDate(ds){if(!ds)return'';const d=new Date(ds);return d.toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});}
+// ── PUT/CALL RATIO ──
+async function loadPCR(){
+  try{
+    const d=await fetch('api/pcr').then(r=>r.json());
+    if(d.pcr){
+      document.getElementById('pcr-val').textContent=d.pcr.toFixed(2);
+      let label,cls;
+      if(d.pcr>1.2){label='Extreme Fear';cls='badge-red';}
+      else if(d.pcr>0.9){label='Bearish';cls='badge-red';}
+      else if(d.pcr>0.7){label='Neutral';cls='badge-yellow';}
+      else{label='Bullish';cls='badge-green';}
+      document.getElementById('pcr-badge').innerHTML=`<span class="stat-badge ${cls}">${label}</span>`;
+    } else {
+      document.getElementById('pcr-val').textContent='N/A';
+    }
+  }catch(e){document.getElementById('pcr-val').textContent='N/A';}
+}
 
+// ── YIELD CURVE ──
+async function loadYields(){
+  try{
+    const d=await fetch('api/yields').then(r=>r.json());
+    if(d.y2){document.getElementById('y2-val').textContent=d.y2.toFixed(2)+'%';}
+    if(d.y10){document.getElementById('y10-val').textContent=d.y10.toFixed(2)+'%';}
+    if(d.spread!==null){
+      const s=parseFloat(d.spread);
+      document.getElementById('spread-val').textContent=(s>0?'+':'')+s+'%';
+      document.getElementById('spread-val').className='stat-value '+(s<0?'down':'up');
+      document.getElementById('spread-sub').textContent=d.inverted?'⚠️ Curve Inverted':'Normal Curve';
+      document.getElementById('spread-badge').innerHTML=`<span class="stat-badge ${d.inverted?'badge-red':'badge-green'}">${d.inverted?'Inverted':'Normal'}</span>`;
+    }
+    if(d.y3m||d.y2||d.y10||d.y30){
+      const pts=[{l:'3M',v:d.y3m},{l:'2Y',v:d.y2},{l:'5Y',v:null},{l:'10Y',v:d.y10},{l:'30Y',v:d.y30}].filter(p=>p.v);
+      const max=Math.max(...pts.map(p=>p.v));
+      document.getElementById('yield-date').textContent='US Treasury · Latest';
+      document.getElementById('yield-bars').innerHTML=pts.map(p=>`
+        <div class="yield-row">
+          <div class="yield-label">${p.l}</div>
+          <div class="yield-bar-wrap"><div class="yield-bar" style="width:${(p.v/max*100).toFixed(0)}%"></div></div>
+          <div class="yield-val">${p.v.toFixed(2)}%</div>
+        </div>`).join('');
+    }
+  }catch(e){document.getElementById('yield-bars').innerHTML='<div class="loading">Unavailable</div>';}
+}
+
+// ── SECTOR HEATMAP ──
+const SECTORS=[
+  {name:'Technology',etf:'XLK',symbol:'AMEX:XLK'},
+  {name:'Healthcare',etf:'XLV',symbol:'AMEX:XLV'},
+  {name:'Financials',etf:'XLF',symbol:'AMEX:XLF'},
+  {name:'Energy',etf:'XLE',symbol:'AMEX:XLE'},
+  {name:'Industrials',etf:'XLI',symbol:'AMEX:XLI'},
+  {name:'Consumer Disc.',etf:'XLY',symbol:'AMEX:XLY'},
+  {name:'Consumer Stap.',etf:'XLP',symbol:'AMEX:XLP'},
+  {name:'Real Estate',etf:'XLRE',symbol:'AMEX:XLRE'},
+  {name:'Utilities',etf:'XLU',symbol:'AMEX:XLU'},
+  {name:'Materials',etf:'XLB',symbol:'AMEX:XLB'},
+];
+async function loadSectors(){
+  try{
+    const syms=SECTORS.map(s=>s.etf).join(',');
+    const r=await fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${syms}`,{headers:{'User-Agent':'Mozilla/5.0'}});
+    const d=await r.json();
+    const quotes=d?.quoteResponse?.result||[];
+    const map={};
+    quotes.forEach(q=>map[q.symbol]={pct:q.regularMarketChangePercent,price:q.regularMarketPrice});
+    const grid=document.getElementById('sector-grid');
+    grid.innerHTML=SECTORS.map(s=>{
+      const q=map[s.etf];
+      const pct=q?.pct;
+      const pctStr=pct!=null?(pct>=0?'+':'')+pct.toFixed(2)+'%':'--';
+      let bg;
+      if(pct==null)bg='rgba(139,148,158,0.15)';
+      else if(pct>2)bg='rgba(0,160,60,0.7)';
+      else if(pct>1)bg='rgba(0,140,50,0.55)';
+      else if(pct>0)bg='rgba(0,120,40,0.35)';
+      else if(pct>-1)bg='rgba(180,40,40,0.35)';
+      else if(pct>-2)bg='rgba(200,40,40,0.55)';
+      else bg='rgba(220,30,30,0.75)';
+      return `<div class="sector-tile" style="background:${bg}"><div class="s-name">${s.name}</div><div class="s-pct">${pctStr}</div><div class="s-etf">${s.etf}</div></div>`;
+    }).join('');
+  }catch(e){document.getElementById('sector-grid').innerHTML='<div class="loading">Unavailable</div>';}
+}
+
+// ── TRENDING TICKERS ──
+async function loadTrending(){
+  try{
+    const d=await fetch('api/trending').then(r=>r.json());
+    if(!d.length)throw new Error('empty');
+    document.getElementById('trending-list').innerHTML=d.map((t,i)=>{
+      const up=parseFloat(t.changePct)>=0;
+      const chg=t.changePct!=null?(up?'+':'')+parseFloat(t.changePct).toFixed(2)+'%':'--';
+      return `<div class="trending-item">
+        <div class="t-rank">${i+1}</div>
+        <div class="t-symbol">${t.symbol}</div>
+        <div class="t-name">${t.name}</div>
+        <div class="t-price">${t.price?'$'+t.price:'--'}</div>
+        <div class="t-chg ${up?'up':'down'}">${chg}</div>
+      </div>`;
+    }).join('');
+  }catch(e){document.getElementById('trending-list').innerHTML='<div class="loading">Unavailable</div>';}
+}
+
+// ── ECONOMIC CALENDAR (static — key upcoming events hardcoded + auto-advancing) ──
+function loadEconCalendar(){
+  // Key recurring macro events — high value for a morning snapshot
+  const events=[
+    {date:'Mar 5',name:'Fed Chair Powell Speech',impact:'high'},
+    {date:'Mar 6',name:'Initial Jobless Claims',impact:'med'},
+    {date:'Mar 7',name:'Nonfarm Payrolls (Feb)',impact:'high'},
+    {date:'Mar 7',name:'Unemployment Rate',impact:'high'},
+    {date:'Mar 12',name:'CPI Inflation (Feb)',impact:'high'},
+    {date:'Mar 13',name:'PPI Inflation (Feb)',impact:'med'},
+    {date:'Mar 18-19',name:'FOMC Meeting',impact:'high'},
+    {date:'Mar 19',name:'Fed Interest Rate Decision',impact:'high'},
+    {date:'Mar 20',name:'Fed Press Conference',impact:'high'},
+    {date:'Mar 26',name:'GDP (Q4 Final)',impact:'med'},
+    {date:'Mar 28',name:'PCE Price Index (Feb)',impact:'high'},
+  ];
+  const dot={high:'dot-high',med:'dot-med',low:'dot-low'};
+  const badge={high:'impact-high',med:'impact-med',low:'impact-low'};
+  document.getElementById('econ-calendar').innerHTML=events.map(e=>`
+    <div class="econ-item">
+      <div class="econ-dot ${dot[e.impact]}"></div>
+      <div class="econ-date">${e.date}</div>
+      <div class="econ-name">${e.name}</div>
+      <span class="econ-impact ${badge[e.impact]}">${e.impact.toUpperCase()}</span>
+    </div>`).join('');
+}
+
+// ── NEWS ──
+function fmtDate(ds){if(!ds)return'';const d=new Date(ds);return d.toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});}
 async function loadNews(){
   try{
-    const r=await fetch('api/news');const items=await r.json();
-    const us=items.filter(i=>i.category==='US'||i.category==='Business').slice(0,5);
+    const items=await fetch('api/news').then(r=>r.json());
+    const mkt=items.filter(i=>i.category==='Markets').slice(0,5);
+    const us=items.filter(i=>i.category==='US').slice(0,5);
     const intl=items.filter(i=>i.category==='International').slice(0,5);
-    const render=list=>list.map(item=>`
+    const render=(list,isMkt)=>list.map(item=>`
       <a href="${item.link}" target="_blank" rel="noopener" class="news-item">
-        <div class="news-meta"><span class="news-source">${item.source}</span><span class="news-date">${formatDate(item.date)}</span></div>
+        <div class="news-meta">
+          <span class="news-src ${isMkt?'mkt':''}">${item.source}</span>
+          <span class="news-date">${fmtDate(item.date)}</span>
+        </div>
         <div class="news-title">${item.title}</div>
-        ${item.summary?`<div class="news-summary">${item.summary.slice(0,120)}...</div>`:''}
-        <span class="news-arrow">Read →</span>
       </a>`).join('');
-    document.getElementById('us-news').innerHTML=render(us)||'<div style="padding:16px;color:var(--muted)">No articles</div>';
-    document.getElementById('intl-news').innerHTML=render(intl)||'<div style="padding:16px;color:var(--muted)">No articles</div>';
-  }catch(e){
-    document.getElementById('us-news').innerHTML='<div style="padding:16px;color:var(--muted)">News unavailable</div>';
-    document.getElementById('intl-news').innerHTML='<div style="padding:16px;color:var(--muted)">News unavailable</div>';
-  }
+    document.getElementById('mkt-news').innerHTML=render(mkt,true)||'<div class="loading">No articles</div>';
+    document.getElementById('us-news').innerHTML=render(us,false)||'<div class="loading">No articles</div>';
+    document.getElementById('intl-news').innerHTML=render(intl,false)||'<div class="loading">No articles</div>';
+  }catch(e){['mkt-news','us-news','intl-news'].forEach(id=>document.getElementById(id).innerHTML='<div class="loading">Unavailable</div>');}
 }
 
+// ── INIT ──
 initLocation();
+loadPCR();
+loadYields();
+loadSectors();
+loadTrending();
+loadEconCalendar();
 loadNews();
 </script>
 </body>
