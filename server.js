@@ -86,7 +86,7 @@ app.get('/api/yields', async (req, res) => {
   } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
-// ── SECTOR PERFORMANCE ──
+// ── SECTOR PERFORMANCE (v8 chart endpoint, one at a time) ──
 app.get('/api/sectors', async (req, res) => {
   try {
     const etfs = ['XLK','XLV','XLF','XLE','XLI','XLY','XLP','XLRE','XLU','XLB'];
@@ -95,12 +95,16 @@ app.get('/api/sectors', async (req, res) => {
       'Accept': 'application/json',
       'Referer': 'https://finance.yahoo.com'
     };
-    const r = await fetch(`https://query2.finance.yahoo.com/v7/finance/quote?symbols=${etfs.join(',')}`, { headers });
-    const d = await r.json();
-    const results = (d?.quoteResponse?.result || []).map(q => ({
-      symbol: q.symbol,
-      pct: q.regularMarketChangePercent,
-      price: q.regularMarketPrice
+    const results = await Promise.all(etfs.map(async (sym) => {
+      try {
+        const r = await fetch(`https://query2.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=1d`, { headers });
+        const d = await r.json();
+        const meta = d?.chart?.result?.[0]?.meta || {};
+        const price = meta.regularMarketPrice;
+        const prev = meta.chartPreviousClose || meta.previousClose;
+        const pct = price && prev ? ((price - prev) / prev) * 100 : null;
+        return { symbol: sym, pct, price };
+      } catch(e) { return { symbol: sym, pct: null, price: null }; }
     }));
     res.json(results);
   } catch(e) { res.status(500).json({ error: e.message }); }
