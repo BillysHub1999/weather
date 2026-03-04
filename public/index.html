@@ -192,7 +192,7 @@ function formatDate(ds){if(!ds)return'';const d=new Date(ds);return d.toLocaleDa
 
 async function loadNews(){
   try{
-    const r=await fetch('/api/news');const items=await r.json();
+    const r=await fetch('api/news');const items=await r.json();
     const us=items.filter(i=>i.category==='US'||i.category==='Business').slice(0,5);
     const intl=items.filter(i=>i.category==='International').slice(0,5);
     const render=list=>list.map(item=>`
