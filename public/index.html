@@ -382,12 +382,9 @@ const SECTORS=[
 ];
 async function loadSectors(){
   try{
-    const syms=SECTORS.map(s=>s.etf).join(',');
-    const r=await fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${syms}`,{headers:{'User-Agent':'Mozilla/5.0'}});
-    const d=await r.json();
-    const quotes=d?.quoteResponse?.result||[];
+    const quotes=await fetch('api/sectors').then(r=>r.json());
     const map={};
-    quotes.forEach(q=>map[q.symbol]={pct:q.regularMarketChangePercent,price:q.regularMarketPrice});
+    quotes.forEach(q=>map[q.symbol]={pct:q.pct,price:q.price});
     const grid=document.getElementById('sector-grid');
     grid.innerHTML=SECTORS.map(s=>{
       const q=map[s.etf];

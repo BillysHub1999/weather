@@ -86,6 +86,26 @@ app.get('/api/yields', async (req, res) => {
   } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
+// ── SECTOR PERFORMANCE ──
+app.get('/api/sectors', async (req, res) => {
+  try {
+    const etfs = ['XLK','XLV','XLF','XLE','XLI','XLY','XLP','XLRE','XLU','XLB'];
+    const headers = {
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+      'Accept': 'application/json',
+      'Referer': 'https://finance.yahoo.com'
+    };
+    const r = await fetch(`https://query2.finance.yahoo.com/v7/finance/quote?symbols=${etfs.join(',')}`, { headers });
+    const d = await r.json();
+    const results = (d?.quoteResponse?.result || []).map(q => ({
+      symbol: q.symbol,
+      pct: q.regularMarketChangePercent,
+      price: q.regularMarketPrice
+    }));
+    res.json(results);
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
 // ── TRENDING TICKERS (Yahoo Finance query2) ──
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 app.get('/api/trending', async (req, res) => {
